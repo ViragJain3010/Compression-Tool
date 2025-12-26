@@ -5,19 +5,19 @@ package src.main.java.compressor;
  * Character and frequency
  */
 public class HuffmanLeafNode implements HuffmanBaseNode {
-    private final char element;
-    private final long weight;
+    private final int symbol;
+    private final int weight;
 
-    public HuffmanLeafNode(char element, long weight){
-        this.element = element;
+    public HuffmanLeafNode(int symbol, int weight){
+        this.symbol = symbol;
         this.weight = weight;
     }
 
-    public char getElement() {
-        return element;
+    public int getSymbol() {
+        return symbol;
     }
 
-    public long getWeight() {
+    public int getWeight() {
         return weight;
     }
 

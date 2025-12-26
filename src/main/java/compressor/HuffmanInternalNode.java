@@ -1,7 +1,7 @@
 package src.main.java.compressor;
 
 public class HuffmanInternalNode implements HuffmanBaseNode {
-    private final long weight;
+    private final int weight;
     private final HuffmanBaseNode left;
     private final HuffmanBaseNode right;
 
@@ -11,7 +11,7 @@ public class HuffmanInternalNode implements HuffmanBaseNode {
         this.weight = left.getWeight() + right.getWeight();
     }
 
-    public long getWeight() {
+    public int getWeight() {
         return weight;
     }
 

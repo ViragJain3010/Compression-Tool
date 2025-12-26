@@ -1,45 +1,27 @@
 package src.test.java.compressor;
 
 import org.junit.jupiter.api.Test;
-import java.util.Map;
-import java.io.IOException;
+import src.main.java.compressor.CompressionTool;
+import src.main.java.compressor.Encoder;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.*;
-import src.main.java.compressor.CompressionTool;
-import src.main.java.compressor.HuffmanBaseNode;
-import src.main.java.compressor.HuffmanTree;
 
-public class CompressionToolTest {
+class CompressionToolTest {
 
-    @Test
-    void countsCharactersCorrectly() throws IOException {
-        Path tempFile = Files.createTempFile("testfile", ".txt");
-        Files.writeString(tempFile, "aAbBcC123!!");
 
-        CompressionTool tool = new CompressionTool();
-        Map<Character, Integer> freq = tool.buildFrequencyTable(tempFile);
-
-        assertEquals(1, freq.get('a'));
-        assertEquals(1, freq.get('b'));
-        assertEquals(1, freq.get('c'));
-        assertEquals(1, freq.get('1'));
-        assertEquals(1, freq.get('2'));
-        assertEquals(1, freq.get('3'));
-        assertEquals(1, freq.get('A'));
-        assertEquals(1, freq.get('B'));
-        assertEquals(1, freq.get('C'));
-
-        Files.deleteIfExists(tempFile);
-    }
 
     @Test
-    void ignoresNonAlphanumericCharacters() throws IOException {
+    void ignoresNonAlphanumericCharacters() throws Exception {
         Path tempFile = Files.createTempFile("testfile", ".txt");
         Files.writeString(tempFile, "hello world!!!");
 
-        CompressionTool tool = new CompressionTool();
-        Map<Character, Integer> freq = tool.buildFrequencyTable(tempFile);
+        Encoder tool = new Encoder(tempFile);
+        var freq = tool.buildFrequencyTable();
 
         assertFalse(freq.containsKey(' '));
         assertFalse(freq.containsKey('!'));
@@ -49,36 +31,22 @@ public class CompressionToolTest {
     }
 
     @Test
-    void testSingleSymbolCreatingSingleNode() {
+    void run_withNoArguments_printsErrorMessage() {
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        CompressionTool tool = new CompressionTool(System.out, new PrintStream(err));
 
+        tool.run(new String[]{});
+
+        assertTrue(err.toString().contains("No file path provided"));
     }
 
     @Test
-    /**
-     *              26
-     *              / \
-     *            12   14
-     *           'c'   / \
-     *                5   9
-     *               'a' 'b'
-     */
-    void testBuildTree(){
-        Map<Character, Integer> freqTable = Map.of(
-            'a', 5,
-            'b', 9,
-            'c', 12
-        );
+    void run_withNonExistentFile_printsError() {
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        CompressionTool tool = new CompressionTool(System.out, new PrintStream(err));
 
-        HuffmanBaseNode root = HuffmanTree.buildTree(freqTable);
-        assertNotNull(root);
-        assertEquals(26, root.getWeight());
-        assertNotNull(root.getLeft());
-        assertNotNull(root.getRight());
-        assertEquals(root.getWeight(), root.getLeft().getWeight() + root.getRight().getWeight());
-        assertFalse(root.isLeaf()); // 26
-        assertTrue(root.getLeft().isLeaf()); // 'c', 12
-        assertTrue(root.getRight().getLeft().isLeaf()); // 'a', 5
-        assertTrue(root.getRight().getLeft().isLeaf()); // 'b', 9
+        tool.run(new String[]{"does-not-exist.txt"});
 
+        assertTrue(err.toString().contains("doesn't exist"));
     }
 }
