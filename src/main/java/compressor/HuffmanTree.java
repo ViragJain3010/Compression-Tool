@@ -22,7 +22,7 @@ public class HuffmanTree {
         this.prefixTable = buildPrefixTable(this.root);
     }
 
-    /*
+    /**
      * Builds the Huffman tree from the frequency table.
      */
     private static HuffmanBaseNode buildHuffmanTree(Map<Integer, Integer> freqTable) {
@@ -48,7 +48,7 @@ public class HuffmanTree {
         return pq.poll();
     }
 
-    /*
+    /**
      * Builds the prefix table from the Huffman tree.
      */
     private static Map<Integer, String> buildPrefixTable(HuffmanBaseNode root) {
@@ -62,7 +62,7 @@ public class HuffmanTree {
         return prefixTable;
     }
 
-    /* Prints the prefix table for debugging purposes */
+    /** Prints the prefix table for debugging purposes */
     private static void printPrefixTable(Map<Integer, String> prefixTable) {
         out.println("   Prefix Table Contents:");
         for (Map.Entry<Integer, String> entry : prefixTable.entrySet()) {
@@ -70,7 +70,7 @@ public class HuffmanTree {
         }
     }
 
-    /* Recursive helper to build the prefix table */
+    /** Recursive helper to build the prefix table */
     private static void buildPrefixTableHelper(HuffmanBaseNode node,String prefixCode,Map<Integer, String> prefixTable) {
         if (node.isLeaf()) {
             HuffmanLeafNode leaf = (HuffmanLeafNode) node;

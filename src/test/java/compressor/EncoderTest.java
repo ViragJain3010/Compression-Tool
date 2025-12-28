@@ -1,33 +1,35 @@
 package src.test.java.compressor;
 
 import org.junit.jupiter.api.Test;
-import src.main.java.compressor.CompressionTool;
 import src.main.java.compressor.Encoder;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EncoderTest {
+class EncoderTest {
+
     @Test
-    void countsCharactersCorrectly() throws Exception {
-        Path tempFile = Files.createTempFile("testfile", ".txt");
-        Files.writeString(tempFile, "aaAbBcC123!!");
+    void frequencyTableCountsBytesCorrectly() throws Exception {
+        Path temp = Files.createTempFile("freq", ".txt");
+        Files.write(temp, new byte[]{'a', 'a', 'b', 'c', 'c', 'c'});
 
-        Encoder tool = new Encoder(tempFile);
-        var freq = tool.buildFrequencyTable();
+        Encoder encoder = new Encoder(temp);
+        Map<Integer, Integer> freq = encoder.buildFrequencyTable();
 
-        assertEquals(2, freq.get('a'));
-        assertEquals(1, freq.get('A'));
-        assertEquals(1, freq.get('b'));
-        assertEquals(1, freq.get('B'));
-        assertEquals(1, freq.get('c'));
-        assertEquals(1, freq.get('C'));
-        assertEquals(1, freq.get('1'));
-        assertEquals(1, freq.get('2'));
-        assertEquals(1, freq.get('3'));
+        assertEquals(2, freq.get((int) 'a'));
+        assertEquals(1, freq.get((int) 'b'));
+        assertEquals(3, freq.get((int) 'c'));
+    }
 
-        Files.deleteIfExists(tempFile);
+    @Test
+    void emptyFileThrowsException() throws Exception {
+        Path temp = Files.createTempFile("empty", ".txt");
+
+        Encoder encoder = new Encoder(temp);
+
+        assertThrows(Exception.class, encoder::runEncoder);
     }
 }

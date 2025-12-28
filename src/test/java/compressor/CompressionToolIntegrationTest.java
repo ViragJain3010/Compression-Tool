@@ -17,32 +17,24 @@ class CompressionToolIntegrationTest {
     Path tempDir;
 
     @Test
-    void printsFrequencyOfCommonCharacter() throws Exception {
-        Path file = tempDir.resolve("test.txt");
-        Files.writeString(file, "hello world this is a test");
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    void runningWithoutArgumentsPrintsError() {
         ByteArrayOutputStream err = new ByteArrayOutputStream();
+        CompressionTool tool = new CompressionTool(System.out, new PrintStream(err));
 
-        CompressionTool tool = new CompressionTool(new PrintStream(out), new PrintStream(err));
-        tool.run(new String[]{file.toString()});
+        tool.run(new String[]{});
 
-        String output = out.toString();
-        assertTrue(output.contains("Frequency of 't' = 4"));
-        assertTrue(err.toString().isEmpty());
+        assertTrue(err.toString().toLowerCase().contains("specify"));
     }
 
     @Test
-    void handlesEmptyFile() throws Exception {
-        Path file = tempDir.resolve("empty.txt");
-        Files.createFile(file);
+    void compressionCreatesCxFile() throws Exception {
+        Path input = tempDir.resolve("file.txt");
+        Files.writeString(input, "hello compression");
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        CompressionTool tool = new CompressionTool();
 
-        CompressionTool tool = new CompressionTool(new PrintStream(out), new PrintStream(err));
-        tool.run(new String[]{file.toString()});
+        tool.run(new String[]{input.toString()});
 
-        assertTrue(out.toString().contains("Frequency of 't' = 0"));
+        assertTrue(Files.exists(tempDir.resolve("file.cx")));
     }
 }
